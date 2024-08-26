@@ -1,40 +1,34 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NextJS 14 Test Project
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This project is a test assignment to evaluate your skills and familiarity with NextJS 14, TypeScript, Prisma, TRPC, and Zustand. The application will be a full-stack application with both frontend and backend implemented within NextJS. The project is expected to take around 2 days to complete.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Project Requirements
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. NextJS 14 Application
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- Use NextJS 14 for both the frontend and backend.
+- Implement the application using TypeScript.
+- Use a SQL database (preferably PostgreSQL, but others are fine too)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### 2. Frontend
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- Implement a simple user interface that interacts with the backend via TRPC.
+- Use Zustand for state management.
+- Ensure the UI is clean, responsive, and user-friendly.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 3. Backend
 
-## Learn More
+- Implement the backend logic within NextJS using API routes.
+- Use Prisma for database interactions.
+- Use TRPC for type-safe API calls.
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Data Model
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Design a simple data model using Prisma. For instance, a model for managing a list of tasks (to-do list) or user profiles.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 5. Features
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Implement CRUD operations for the chosen data model.
+- Ensure all CRUD operations are exposed via TRPC endpoints.
