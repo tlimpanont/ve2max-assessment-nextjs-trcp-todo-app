@@ -27,7 +27,14 @@ export default function HomePage() {
     const [isLoading, setIsLoading] = useState(false);
 
     // Fetch all tasks
-    const {data: tasks, refetch, isLoading: tasksLoading, isError} = task.getAll.useQuery();
+    const {data: tasks, refetch, isLoading: tasksLoading, isError} =
+        task.getAll.useQuery(undefined,
+            {
+                initialData: [],
+                refetchOnMount: false,
+                refetchOnReconnect: false,
+            }
+        );
 
     // Mutation hooks for CRUD actions
     const createTask = task.create.useMutation({
