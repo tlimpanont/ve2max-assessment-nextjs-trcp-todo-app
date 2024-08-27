@@ -1,7 +1,9 @@
 // src/app/page.tsx
 
-import {FormEvent, useState} from 'react';
+import {useState} from 'react';
 import {
+    Alert,
+    AlertIcon,
     Box,
     Button,
     Center,
@@ -11,6 +13,7 @@ import {
     HStack,
     IconButton,
     Input,
+    Spinner,
     Text,
     useColorMode,
     useColorModeValue,
@@ -24,7 +27,7 @@ export default function HomePage() {
     const [isLoading, setIsLoading] = useState(false);
 
     // Fetch all tasks
-    const {data: tasks, refetch} = task.getAll.useQuery();
+    const {data: tasks, refetch, isLoading: tasksLoading, isError} = task.getAll.useQuery();
 
     // Mutation hooks for CRUD actions
     const createTask = task.create.useMutation({
@@ -44,13 +47,11 @@ export default function HomePage() {
     });
 
     // Handlers for CRUD operations
-    const handleAddTask = (e: FormEvent) => {
+    const handleAddTask = (e: React.FormEvent) => {
         e.preventDefault(); // Prevent the default form submission
         if (newTaskTitle.trim() !== '') {
             setIsLoading(true); // Start loading
-            setTimeout(() => {
-                createTask.mutate({title: newTaskTitle});
-            }, 350); // Simulate 1.5 seconds loading
+            createTask.mutate({title: newTaskTitle});
         }
     };
 
@@ -87,44 +88,59 @@ export default function HomePage() {
             </Flex>
 
             {/* Main Content */}
-            <Center>
-                <VStack spacing={4} mt={8} px={8}>
-                    <form onSubmit={handleAddTask} style={{width: '100%'}}>
-                        <HStack>
-                            <Input
-                                placeholder="New Task"
-                                value={newTaskTitle}
-                                onChange={(e) => setNewTaskTitle(e.target.value)}
-                                required
-                                disabled={isLoading} // Disable input when loading
-                            />
-                            <Button
-                                type="submit"
-                                colorScheme="teal"
-                                isLoading={isLoading} // Show spinner on button while loading
-                                loadingText="Adding"
-                                isDisabled={isLoading} // Disable button while loading
-                            >
-                                Add Task
-                            </Button>
-                        </HStack>
-                    </form>
+            <VStack spacing={4} mt={8} px={8}>
+                {/* Form to add tasks */}
+                <form onSubmit={handleAddTask} style={{width: '100%'}}>
+                    <HStack>
+                        <Input
+                            placeholder="New Task"
+                            value={newTaskTitle}
+                            onChange={(e) => setNewTaskTitle(e.target.value)}
+                            required
+                            disabled={isLoading} // Disable input when loading
+                        />
+                        <Button
+                            type="submit"
+                            colorScheme="teal"
+                            isLoading={isLoading} // Show spinner on button while loading
+                            loadingText="Adding"
+                            isDisabled={isLoading} // Disable button while loading
+                        >
+                            Add Task
+                        </Button>
+                    </HStack>
+                </form>
 
-                    {tasks?.map((task) => (
-                        <HStack key={task.id} spacing={4} w="100%" justifyContent="space-between">
-                            <Checkbox
-                                isChecked={task.completed}
-                                onChange={() => handleToggleTask(task.id, !task.completed)}
-                            >
-                                <Text as={task.completed ? 's' : undefined}>{task.title}</Text>
-                            </Checkbox>
-                            <Button onClick={() => handleDeleteTask(task.id)} colorScheme="red">
-                                Delete
-                            </Button>
-                        </HStack>
-                    ))}
-                </VStack>
-            </Center>
+                {/* Loading State */}
+                {tasksLoading && (
+                    <Center>
+                        <Spinner size="xl"/>
+                    </Center>
+                )}
+
+                {/* Error State */}
+                {isError && (
+                    <Alert status="error">
+                        <AlertIcon/>
+                        Failed to load tasks
+                    </Alert>
+                )}
+
+                {/* Display Tasks */}
+                {tasks?.map((task) => (
+                    <HStack key={task.id} spacing={4} w="100%" justifyContent="space-between">
+                        <Checkbox
+                            isChecked={task.completed}
+                            onChange={() => handleToggleTask(task.id, !task.completed)}
+                        >
+                            <Text as={task.completed ? 's' : undefined}>{task.title}</Text>
+                        </Checkbox>
+                        <Button onClick={() => handleDeleteTask(task.id)} colorScheme="red">
+                            Delete
+                        </Button>
+                    </HStack>
+                ))}
+            </VStack>
         </Box>
     );
 }
