@@ -31,8 +31,8 @@ export default function HomePage() {
         task.getAll.useQuery(undefined,
             {
                 initialData: [],
-                refetchOnMount: false,
-                refetchOnReconnect: false,
+                refetchOnMount: true,
+                refetchOnReconnect: true,
             }
         );
 
