@@ -1,6 +1,4 @@
-// src/app/page.tsx
-
-import {useState} from 'react';
+import {FormEvent, useState} from 'react';
 import {
     Alert,
     AlertIcon,
@@ -19,7 +17,7 @@ import {
     useColorModeValue,
     VStack,
 } from '@chakra-ui/react';
-import {MoonIcon, SunIcon} from '@chakra-ui/icons';
+import {MoonIcon, SunIcon, RepeatIcon} from '@chakra-ui/icons';
 import {trpc as task} from '@/utils/trpc';
 
 export default function HomePage() {
@@ -28,13 +26,11 @@ export default function HomePage() {
 
     // Fetch all tasks
     const {data: tasks, refetch, isLoading: tasksLoading, isError} =
-        task.getAll.useQuery(undefined,
-            {
-                initialData: [],
-                refetchOnMount: true,
-                refetchOnReconnect: true,
-            }
-        );
+        task.getAll.useQuery(undefined, {
+            initialData: [],
+            refetchOnMount: true,
+            refetchOnReconnect: true,
+        });
 
     // Mutation hooks for CRUD actions
     const createTask = task.create.useMutation({
@@ -54,7 +50,7 @@ export default function HomePage() {
     });
 
     // Handlers for CRUD operations
-    const handleAddTask = (e: React.FormEvent) => {
+    const handleAddTask = (e: FormEvent) => {
         e.preventDefault(); // Prevent the default form submission
         if (newTaskTitle.trim() !== '') {
             setIsLoading(true); // Start loading
@@ -87,11 +83,17 @@ export default function HomePage() {
                 boxShadow="md"
             >
                 <Heading size="lg">Task Manager</Heading>
-                <IconButton
-                    aria-label="Toggle Dark Mode"
-                    icon={colorMode === 'light' ? <MoonIcon/> : <SunIcon/>}
-                    onClick={toggleColorMode}
-                />
+                <HStack>
+                    <IconButton aria-label="Reload list of todos" icon={<RepeatIcon/>} onClick={() => refetch()}
+                                isLoading={tasksLoading}>
+                        Reload
+                    </IconButton>
+                    <IconButton
+                        aria-label="Toggle Dark Mode"
+                        icon={colorMode === 'light' ? <MoonIcon/> : <SunIcon/>}
+                        onClick={toggleColorMode}
+                    />
+                </HStack>
             </Flex>
 
             {/* Main Content */}
