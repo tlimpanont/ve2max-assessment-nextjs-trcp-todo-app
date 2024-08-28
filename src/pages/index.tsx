@@ -17,25 +17,32 @@ import {
     useColorModeValue,
     VStack,
 } from '@chakra-ui/react';
-import {MoonIcon, SunIcon, RepeatIcon} from '@chakra-ui/icons';
+import {MoonIcon, RepeatIcon, SunIcon} from '@chakra-ui/icons';
 import {trpc as task} from '@/utils/trpc';
+import {useTasksStore} from '@/store/tasks';
 
 export default function HomePage() {
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Fetch all tasks
-    const {data: tasks, refetch, isLoading: tasksLoading, isError} =
-        task.getAll.useQuery(undefined, {
-            initialData: [],
-            refetchOnMount: true,
-            refetchOnReconnect: true,
-        });
+    const tasks = useTasksStore((state) => state.tasks);
+    const addTask = useTasksStore((state) => state.addTask);
+    const setTasks = useTasksStore((state) => state.setTasks);
+    const updateTaskInStore = useTasksStore((state) => state.updateTask);
+    const deleteTaskInStore = useTasksStore((state) => state.deleteTask);
 
-    // Mutation hooks for CRUD actions
+    // Fetch all tasks from the server and sync with Zustand store
+    const {refetch, isLoading: tasksLoading, isError} = task.getAll.useQuery(undefined, {
+        initialData: [],
+        onSuccess: (data) => {
+            setTasks(data); // Sync Zustand store with server data
+        },
+    });
+
+    // Mutation hooks for CRUD actions with server sync
     const createTask = task.create.useMutation({
         onSuccess: () => {
-            refetch();
+            refetch(); // Sync with server after mutation
             setNewTaskTitle('');
             setIsLoading(false); // Stop loading after mutation success
         },
@@ -49,21 +56,25 @@ export default function HomePage() {
         onSuccess: () => refetch(),
     });
 
-    // Handlers for CRUD operations
+    // Handlers for CRUD operations with optimistic UI (local state first)
     const handleAddTask = (e: FormEvent) => {
-        e.preventDefault(); // Prevent the default form submission
+        e.preventDefault();
         if (newTaskTitle.trim() !== '') {
+            const newTask = {id: Date.now(), title: newTaskTitle, completed: false};
+            addTask(newTask); // Optimistically update the local state
             setIsLoading(true); // Start loading
-            createTask.mutate({title: newTaskTitle});
+            createTask.mutate({title: newTaskTitle}); // Sync with the server
         }
     };
 
     const handleToggleTask = (id: number, completed: boolean) => {
-        updateTask.mutate({id, completed});
+        updateTaskInStore(id, completed); // Optimistically update the local state
+        updateTask.mutate({id, completed}); // Sync with the server
     };
 
     const handleDeleteTask = (id: number) => {
-        deleteTask.mutate({id});
+        deleteTaskInStore(id); // Optimistically update the local state
+        deleteTask.mutate({id}); // Sync with the server
     };
 
     // Dark mode toggle

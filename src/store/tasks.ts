@@ -8,17 +8,28 @@ type Task = {
 
 type TasksStore = {
     tasks: Task[];
-    addTask: (title: string) => void;
+    addTask: (task: Task) => void;
     updateTask: (id: number, completed: boolean) => void;
     deleteTask: (id: number) => void;
+    setTasks: (tasks: Task[]) => void;
 };
 
 export const useTasksStore = create<TasksStore>((set) => ({
     tasks: [],
-    addTask: (title) =>
-        set((state) => ({
-            tasks: [...state.tasks, { id: Date.now(), title, completed: false }],
+    setTasks: (tasks) =>
+        set(() => ({
+            tasks,
         })),
+    addTask: (task) =>
+        set((state) => {
+            // Prevent adding duplicate tasks by ID
+            if (state.tasks.some((t) => t.id === task.id)) {
+                return state;
+            }
+            return {
+                tasks: [...state.tasks, task],
+            };
+        }),
     updateTask: (id, completed) =>
         set((state) => ({
             tasks: state.tasks.map((task) =>
